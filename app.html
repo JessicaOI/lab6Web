@@ -1,0 +1,116 @@
+<html>
+  <head>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.24.0/babel.js"></script>
+
+    
+    <style>
+        body{
+          background-color: #4B8AB0 ;
+        }
+        h1{
+          position: absolute;
+          left: calc(50% - 10rem);
+        }
+        button{
+          position: absolute;
+          left: calc(48% - 1rem);
+          top: 8%;
+          background-color: black;
+          color:white;
+          font-family: 'Helvetica', 'Arial', sans-serif;
+          display: inline-block;
+          font-size: 1em;
+          padding: 1em 2em;
+          -webkit-appearance: none;
+          appearance: none;
+          border-bottom-left-radius: 18px;
+          border-bottom-right-radius: 18px;
+          border-top-left-radius: 18px;
+          border-top-right-radius: 18px;
+        }
+        .card-grid{
+          position: absolute;
+          top: 12%;
+          left: calc(50% - 45rem);
+          margin-top: 40px;
+          display: grid;
+          grid-template-columns: 0.52fr 0.52fr 0.52fr 0.52fr;
+          grid-gap: 15px;
+        }
+        .front{
+          width: 330px;
+          height: 190px;
+          display: block;
+          border: 2px solid #FFE81F;
+          border-radius: 6px;
+        }
+        .back{
+          width: 330px;
+          height: 190px;
+          display: block;
+          border: 2px solid #FFE81F;
+          border-radius: 6px;
+        }
+    </style>
+  </head>
+  <body>
+    <div id='root'></div>
+    <script type="text/babel">
+      /*Aqui va el codigo de react*/
+     function Todo()
+     {
+        const cartas = [
+          {"src":"boba.jpg"},
+          {"src":"c3po.jpg"},
+          {"src":"leia.jpg"},
+          {"src":"maul.jpg"},
+          {"src":"r2d2.jpg"},
+          {"src":"trooper.jpg"},
+          {"src":"vader.jpg"},
+          {"src":"yoda.jpg"}
+
+        ]
+
+        //shuffle cards
+       const [cartas2, setCartas2] = React.useState([])
+       const [turns, setTurns] = React.useState(0)
+
+       const shuffleCards = () =>{
+         const revueltas = [...cartas, ...cartas]
+         .sort(() => Math.random() - 0.5)
+         .map((carta) => ({...carta, id: Math.random() }))
+
+         setCartas2(revueltas)
+         setTurns(0)
+       }
+
+       console.log(cartas2, turns)
+
+        return(
+        <div className = "Todo">
+          <h1>Memory Game Star Wars</h1>
+          <button onClick={shuffleCards}>New Game</button>
+          <div className = "card-grid">
+            {cartas2.map(carta => (
+              <div className = "carta" key = {carta.id}>
+              <div>
+                <img className = "front" src = {carta.src} alt ="card front" />
+                <img className = "back" src = "cover.jpg" alt ="card back" />
+              </div>
+            </div>
+            ))}
+            </div>
+        </div>
+        );
+     }
+
+     ReactDOM.render(
+        <Todo/>,
+        document.getElementById('root')
+      )
+      
+    </script>
+  </body>
+</html>
