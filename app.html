@@ -73,10 +73,14 @@
 
         ]
 
-        //shuffle cards
+        
        const [cartas2, setCartas2] = React.useState([])
        const [turns, setTurns] = React.useState(0)
 
+       const[primerClick, setPrimerClick] = React.useState(null)
+       const[segundoClick, setSegundoClick] = React.useState(null)
+
+       //shuffle cards(las posiciones random en el grid)
        const shuffleCards = () =>{
          const revueltas = [...cartas, ...cartas]
          .sort(() => Math.random() - 0.5)
@@ -86,7 +90,36 @@
          setTurns(0)
        }
 
-       console.log(cartas2, turns)
+       //console.log(cartas2, turns)
+
+       //cuando le da click a la cover selecciona la carta que tiene 'abajo'
+       const userApacha = (carta) => {
+         primerClick ? setSegundoClick(carta) : setPrimerClick(carta)
+         console.log(carta.src)
+       }
+
+       //comparando las cartas
+       React.useEffect(() => {
+        if(primerClick && segundoClick){
+
+          if(primerClick.src === segundoClick.src){
+            console.log('iguales')
+            resetTurn()
+          }
+          else{
+            console.log('no iguales')
+            resetTurn()
+          }
+        }
+       }, [primerClick, segundoClick])
+
+
+       //resetear contador de turnos
+       const resetTurn = () => {
+         setPrimerClick(null)
+         setSegundoClick(null)
+         setTurns(prevTurns => prevTurns + 1)
+       }
 
         return(
         <div className = "Todo">
@@ -97,7 +130,7 @@
               <div className = "carta" key = {carta.id}>
               <div>
                 <img className = "front" src = {carta.src} alt ="card front" />
-                <img className = "back" src = "cover.jpg" alt ="card back" />
+                <img className = "back" src = "cover.jpg" onClick = {userApacha} alt ="card back" />
               </div>
             </div>
             ))}
