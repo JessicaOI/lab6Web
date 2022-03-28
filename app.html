@@ -90,18 +90,42 @@
          setTurns(0)
        }
 
+      //segun el video donde me guie esto es un componente, pero aqui en el lab lo dejare  como otra función para poder tomar las cartas por separado
+
+      function SingleCard({ carta, userElige }){
+
+        const userApacha = () => {
+          userElige(carta)
+        }
+      
+
+        return(
+          <div className = "carta">
+              <div>
+                <img className = "front" src = {carta.src} alt ="card front" />
+                <img className = "back" src = "cover.jpg" onClick = {userApacha} alt ="card back" />
+              </div>
+            </div>
+        );
+      }
+
+
+
+
        //console.log(cartas2, turns)
 
        //cuando le da click a la cover selecciona la carta que tiene 'abajo'
-       const userApacha = (carta) => {
+       const userElige = (carta) => {
          primerClick ? setSegundoClick(carta) : setPrimerClick(carta)
-         console.log(carta.src)
+         //console.log(carta)
        }
 
        //comparando las cartas
        React.useEffect(() => {
         if(primerClick && segundoClick){
 
+          console.log(primerClick.src)
+          console.log(segundoClick.src)
           if(primerClick.src === segundoClick.src){
             console.log('iguales')
             resetTurn()
@@ -127,12 +151,7 @@
           <button onClick={shuffleCards}>New Game</button>
           <div className = "card-grid">
             {cartas2.map(carta => (
-              <div className = "carta" key = {carta.id}>
-              <div>
-                <img className = "front" src = {carta.src} alt ="card front" />
-                <img className = "back" src = "cover.jpg" onClick = {userApacha} alt ="card back" />
-              </div>
-            </div>
+              <SingleCard key = {carta.id} carta = {carta} userElige = {userElige}/>
             ))}
             </div>
         </div>
