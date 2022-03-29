@@ -13,6 +13,22 @@
           position: absolute;
           left: calc(50% - 10rem);
         }
+        h2{
+          position: relative;
+          left: calc(50% - 25rem);
+          top: 35rem;
+          font-family: 'Helvetica', 'Amasis MT Pro Black', sans-serif;
+          color:#FFE81F;
+          -webkit-text-stroke: 3px black;
+          font-size: 7.5em;
+        }
+        p{
+          position: absolute;
+          left: calc(50% - 5rem);
+          top: 75%;
+          font-family: 'Helvetica', 'Arial', sans-serif;
+          font-size: 2em;
+        }
         button{
           position: absolute;
           left: calc(48% - 1rem);
@@ -41,13 +57,7 @@
         }
 
         /*escondiendo la imagen debajo de la cover*/
-        .carta .front {
-          transform: rotateY(90deg);
-          position: absolute;
-        }
-        .flipped .front {
-          transform: rotateY(0deg);
-        }
+        /*detalles a las cartas*/
 
         .front{
           width: 330px;
@@ -63,6 +73,31 @@
           border: 2px solid #FFE81F;
           border-radius: 6px;
         }
+               
+        
+
+        /*animación del flip*/
+
+        .carta .front {
+        transform: rotateY(90deg);
+        transition: all ease-in 0.2s;
+        position: absolute;
+        
+        }
+        .flipped .front {
+          transform: rotateY(0deg);
+          transition-delay: 0.2s;
+        }
+        .carta .Back{
+          transition: all ease-in 0.2s;
+          transition-delay: 0.2s
+        }
+        .flipped .Back{
+          transform: rotateY(90deg);
+          transition-delay: 0s;
+        }
+
+        
 
         
 
@@ -71,6 +106,35 @@
   <body>
     <div id='root'></div>
     <script type="text/babel">
+
+
+       //-------------------------------------------------
+      //segun el video donde me guie esto es un componente, pero aqui en el lab lo dejare  como otra función para poder tomar las cartas por separado  
+      function SingleCard({ carta, userElige, flipped, disabled }){
+        
+        const userApacha = () => {
+          //que no deje ejegir otra carta hasta que las otras se volteen
+          if(!disabled)
+          {
+            userElige(carta)
+          }
+          
+        }
+      
+
+        return(
+          <div className = "carta">
+              <div className = {flipped ? "flipped" : ""}>
+                <img className = "front" src = {carta.src} alt ="card front" />
+                <img className = "back" src = "cover.jpg" onClick = {userApacha} alt ="card back" />
+              </div>
+            </div>
+        );
+      }
+
+
+
+
       /*Aqui va el codigo de react*/
      function Todo()
      {
@@ -93,38 +157,26 @@
        const[primerClick, setPrimerClick] = React.useState(null)
        const[segundoClick, setSegundoClick] = React.useState(null)
 
+       const[disabled, setDisabled] = React.useState(false)
+
+       const[cont, setCont] = React.useState(0)
+
        //shuffle cards(las posiciones random en el grid)
        const shuffleCards = () =>{
          const revueltas = [...cartas, ...cartas]
          .sort(() => Math.random() - 0.5)
          .map((carta) => ({...carta, id: Math.random() }))
 
+                  
+         setPrimerClick(null)
+         setSegundoClick(null)
+
          setCartas2(revueltas)
          setTurns(0)
+         setCont(0)
        }
 
-       //-------------------------------------------------
-      //segun el video donde me guie esto es un componente, pero aqui en el lab lo dejare  como otra función para poder tomar las cartas por separado  
-      function SingleCard({ carta, userElige, flipped }){
-
-        const userApacha = () => {
-          userElige(carta)
-        }
       
-
-        return(
-          <div className = "carta">
-              <div className = {flipped ? "flipped" : ""}>
-                <img className = "front" src = {carta.src} alt ="card front" />
-                <img className = "back" src = "cover.jpg" onClick = {userApacha} alt ="card back" />
-              </div>
-            </div>
-        );
-      }
-
-
-
-
        //console.log(cartas2, turns)
 
        //cuando le da click a la cover selecciona la carta que tiene 'abajo'
@@ -136,9 +188,7 @@
        //comparando las cartas
        React.useEffect(() => {
         if(primerClick && segundoClick){
-
-          //console.log(primerClick.src)
-          //console.log(segundoClick.src)
+          setDisabled(true)
 
           if(primerClick.src === segundoClick.src){
             //console.log('iguales')
@@ -146,7 +196,9 @@
               return prevCartas2.map(carta => {
                 if(carta.src === primerClick.src)
               {
+                setCont(c => c+1)
                 return {...carta, matched: true}
+
               }
               else
               {
@@ -171,7 +223,28 @@
          setPrimerClick(null)
          setSegundoClick(null)
          setTurns(prevTurns => prevTurns + 1)
+         setDisabled(false)
        }
+
+       function ganador() {
+        if(cont === 16)
+        {
+          return(
+            <div>
+                <h2>¡Has Ganado!</h2>
+            </div>
+          )
+        }
+        
+       }
+      
+
+
+      //iniciar un nuevo juego automaticamente
+       React.useEffect(() => {
+         shuffleCards()
+       }, [])
+
 
         return(
         <div className = "Todo">
@@ -179,9 +252,14 @@
           <button onClick={shuffleCards}>New Game</button>
           <div className = "card-grid">
             {cartas2.map(carta => (
-              <SingleCard key = {carta.id} carta = {carta} userElige = {userElige} flipped = {carta === primerClick || carta === segundoClick || carta.matched}/>
+              <SingleCard key = {carta.id} carta = {carta} userElige = {userElige} flipped = {carta === primerClick || carta === segundoClick || carta.matched} disabled = {disabled}/>
             ))}
             </div>
+            <p>Intentos: {turns}</p>
+            <div>
+              {ganador()}
+            </div>
+            
         </div>
         );
      }
